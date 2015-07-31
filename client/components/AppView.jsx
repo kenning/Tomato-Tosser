@@ -1,0 +1,107 @@
+var React = require('react');
+
+var LobbyView = require('./LobbyView.jsx');
+var LobbyListView = require('./LobbyListView.jsx');
+
+var socketInterface = require('../ClientSocketManager.js');
+
+module.exports = React.createClass({
+  getInitialState: function() {
+    return  {
+      username: "",
+      timeData : {},
+      scoreData: {},
+      gameStart : null,
+      lobbies: [],
+      lobbyDisplay: false,
+      lobbyListDisplay: true,
+      singleTeamGame: false,
+      onHostTeam: true,
+      gameHasEnded: false,
+      review: "",
+      titles: [],
+      correctIndex: null
+    }
+  },
+  componentDidMount : function() {
+    socketInterface.addNewDataListener(this.updateData);
+  },
+  updateData: function(data) {
+    console.log(data);
+    this.setState(data);
+  },
+  displayLobbyList: function(){
+    this.setState({
+      lobbyListDisplay: true,
+      lobbyDisplay: false
+    });
+  },
+  endGame: function() {
+    this.setState({gameHasEnded: true});
+  },
+  render: function() {
+    if (this.state.lobbyListDisplay) {
+    //User is in the lobby list view
+      return (<LobbyListView lobbies={this.state.lobbies} 
+                             currentLobby={this.state.currentLobby}
+                             gameStart={this.state.gameStart}
+                             singleTeamGame={this.state.singleTeamGame}
+                             onHostTeam={this.state.onHostTeam}
+                             username={this.state.username} />)
+    } else if (this.state.lobbyDisplay) {
+    //User is in the lobby display view
+      var yourLobby = null;
+      for(var i = 0; i < this.state.lobbies.length; i++) {
+        if(!this.state.lobbies[i].userIds) continue;
+        if(this.state.lobbies[i].users.indexOf(this.state.username) > -1){
+          yourLobby = this.state.lobbies[i];
+          break;
+        }
+      }
+      return (<LobbyView lobby={yourLobby} 
+                         username={this.state.username}
+                         gameStart={this.state.gameStart}
+                         singleTeamGame={this.state.singleTeamGame}
+                         onHostTeam={this.state.onHostTeam}
+                         displayLobbyList={this.displayLobbyList} />)
+    } else {
+    //User is in the game view
+      if (this.state.gameHasEnded) {
+        if(this.state.singleTeamGame) {
+          return (
+            <div>
+              Game over! <br/>
+              Your score: {this.state.scoreData.hostTeamScore}
+            </div>
+          )
+        } else {
+          if(this.state.onHostTeam) {
+            return (
+              <div>
+                Game over! <br/>
+                Your score: {this.state.scoreData.hostTeamScore}<br/>
+                Their score: {this.state.scoreData.notHostTeamScore}
+              </div>
+            )
+          } else {
+            return (
+              <div>
+                Game over! <br/>
+                Your score: {this.state.scoreData.notHostTeamScore}
+                Their score: {this.state.scoreData.hostTeamScore}
+              </div>
+            )
+          }
+        }
+      } else {
+        return (
+          <div id="app-view">
+            HALP
+            {this.state.review}
+            {this.state.titles}
+          </div>
+        )
+      } 
+    }
+  }
+});

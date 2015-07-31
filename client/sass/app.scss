@@ -1,0 +1,159 @@
+// /* Universal */
+// body{
+//   font-size: 14px;
+//   font-family: 'Georgia', serif;
+//   background-color: #5C4033;
+// }
+// div{
+//   padding:5px;
+// }
+// h1 {
+//   margin:0px;
+//   font-family: 'Cinzel', serif;
+//   color: #FFDB4D;
+//   text-shadow: 0px 1px 0px #FFCC00, 0px 2px 0px #B28F00, 0px 3px 0px #665200;
+// }
+//   // Button hover/focus change
+// button {
+//   outline:none;
+//   font-size: 14px;
+//   font-family: 'Georgia', serif;
+// }
+// button:hover {
+//   box-shadow: 0px 0px 1px 1px #000;
+// }
+// button:focus {
+//   box-shadow: 0px 0px 1px 1px #000;
+// }
+//   // 3D button
+// .button{
+//   position: relative;
+//   border: none;
+//   display: inline-block;
+//   box-shadow: inset 0px 0px 0px 1px rgba(0,0,0,0.2),
+//           inset 0px -5px 0px 0px rgba(0,0,0,0.3),
+//         inset 0px 2px 0px 0px rgba(255,255,255,0.5);
+//   -webkit-border-radius: 5px;
+//   -moz-border-radius: 5px;
+//   border-radius: 5px;
+//   overflow: hidden;
+//   cursor: pointer;
+//   margin: 5px;
+//   padding:5px;
+// }
+// .button:hover{
+//   box-shadow: inset 0px 0px 0px 1px rgba(0,0,0,0.2),
+//               inset 0px -5px 0px 0px rgba(0,0,0,0.3),
+//               inset 0px 2px 0px 0px rgba(255,255,255,0.5),
+//               0px 0px 1px 1px #000;
+// }
+// .button:focus{
+//   box-shadow: inset 0px 0px 0px 1px rgba(0,0,0,0.2),
+//             inset 0px -5px 0px 0px rgba(0,0,0,0.3),
+//             inset 0px 2px 0px 0px rgba(255,255,255,0.5),
+//             0px 0px 1px 1px #000;
+// }
+// .button:active{
+//   box-shadow: inset 0px 0px 0px 1px rgba(0,0,0,0.2),
+//               inset 0px -2px 0px 0px rgba(0,0,0,0.3),
+//               inset 0px 2px 0px 0px rgba(255,255,255,0.5);
+//   top: 3px;
+// }
+//   // Wood background
+// .wood{
+//   background: url('/images/wood_pattern.png');
+// }
+// .light-wood{
+//   background: url(http://subtlepatterns.com/patterns/wood_pattern.png);
+// }
+//   // Wood frame
+// #title-wood-frame{
+//   display:inline-block;
+//   padding:5px 10px;
+// }
+// .wood-frame{
+//   border: solid 2px #99520c;
+//   outline: solid 2px #593007;
+// }
+// .full{
+//   height:100%;
+//   width:100%;
+// }
+// .no-padding{
+//   padding:0px;
+// }
+//   // User box
+// #users-box{
+//   display: inline-block;
+//   margin-left: 40px;
+// }
+
+// /* Lobby List */
+
+// #lobby-list-view{
+//   background-color: white;
+// }
+
+// /* Lobby */
+
+// #lobby-view{
+//   background-color: white;
+// }
+
+// /* Game */
+
+// .hint-view{
+//   width:48%;
+//   padding:1%;
+//   // background-color:#a6a;
+//   display:inline-block;
+//   // color: white;
+// }
+// .hint-detail{
+//   background-color: #aaa;
+//   color:#000;
+//   margin:5px;
+// }
+//   // Timers and Scores 
+// .timer-view-quarter{
+//   width:23%;
+//   display: inline-block;
+// }
+// .timer-normal{
+//   color: white;
+//   background-color: black;
+// }
+// .timer-warning{
+//   background-color: #FFA54F;
+// }
+// .timer-danger{
+//   background-color: #8B2323;
+//   color: white;
+// }
+// .timer-alpha{
+//   background: url('/images/yellow_wood.png');
+// }
+// .timer-bravo{
+//   background: url('/images/red_wood.png');
+//   color:#ccc;
+// }
+//   // Question
+// .question-half{
+//   width:45%;
+//   display:inline-block;
+// }
+// #question-view{
+// }
+//   // Answers 
+// .answer-entry{
+//   color: #FFDB4D;
+//   text-shadow: 0px 1px 0px #FFCC00, 0px 2px 0px #B28F00, 0px 3px 0px #665200;
+// }
+//   // Team
+// .alpha{
+//   background: url('/images/yellow_wood.png');
+// }
+// .bravo{
+//   background: url('/images/red_wood.png');
+//   color:#ccc;
+// }
