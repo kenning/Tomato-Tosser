@@ -9,9 +9,9 @@ module.exports = React.createClass({
     return (
       <div>
         <UsersView username={this.props.username} 
-           gameStart={this.props.gameStart}
-           singleTeamGame={this.props.singleTeamGame}
-           onHostTeam={this.props.onHostTeam} />
+                   gameStart={this.props.gameStart}
+                   singleTeamGame={this.props.singleTeamGame}
+                   onHostTeam={this.props.onHostTeam} />
         <br/>
         <div>
           <button onClick={this.startSinglePlayerGame}>

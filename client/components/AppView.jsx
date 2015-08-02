@@ -2,6 +2,10 @@ var React = require('react');
 
 var LobbyView = require('./LobbyView.jsx');
 var LobbyListView = require('./LobbyListView.jsx');
+var UsersView = require('./UsersView.jsx');
+var TitleView = require('./TitleView.jsx');
+var ReviewView = require('./ReviewView.jsx');
+var GameView = require('./GameView.jsx');
 
 var socketInterface = require('../ClientSocketManager.js');
 
@@ -16,6 +20,7 @@ module.exports = React.createClass({
       lobbyDisplay: false,
       lobbyListDisplay: true,
       singleTeamGame: false,
+      singlePlayerGame: false,
       onHostTeam: true,
       gameHasEnded: false,
       review: "",
@@ -96,9 +101,16 @@ module.exports = React.createClass({
       } else {
         return (
           <div id="app-view">
-            HALP
-            {this.state.review}
-            {this.state.titles}
+            <UsersView username={this.state.username} 
+                       gameStart={this.state.gameStart}
+                       singleTeamGame={this.state.singleTeamGame}
+                       singlePlayerGame={this.state.singlePlayerGame}
+                       onHostTeam={this.state.onHostTeam} />
+            <GameView review={this.state.review}
+                      reviewer={this.state.reviewer} 
+                      correctIndex={this.state.correctIndex}
+                      titles={this.state.titles} 
+                      url={this.state.url} />
           </div>
         )
       } 

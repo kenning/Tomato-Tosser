@@ -4,10 +4,13 @@ module.exports = React.createClass({
   render: function() {
     return (
       <div className="no-padding">
-        <div id="title-wood-frame" className="wood-frame wood">
+        <span className="top-block">
           <h1>Tomato Tosser</h1>
-        </div>
-        {this.renderUsersBox()}
+          {this.renderUsersBox()}
+        </span>
+        <span className="top-block tomato">
+          
+        </span>
       </div>
     )
   },
@@ -15,20 +18,22 @@ module.exports = React.createClass({
   	return this.props.onHostTeam ? (<b>Alpha team</b>) : (<b>Bravo team</b>);
   },
   renderUsersBox: function() {
+    if(this.props.singlePlayerGame) return (<span></span>);
     if(this.props.singleTeamGame || !this.props.gameStart) {
       return (
-        <div id="users-box" className="wood-frame light-wood">
+        <div className="top-block">
           You are: <b>{this.props.username}</b>
         </div>
       )
-    } else {
-      return (
-        <div id="users-box" className="wood-frame light-wood">
-          You are: <b>{this.props.username}</b>
-          <br/>
-          Your team is: {this.renderTeamName()}
-        </div>
-      )
-    }
+    } 
+    return (
+      <div className="top-block">
+        You are: <b>{this.props.username}</b>
+        <br/>
+        Your team is: {this.renderTeamName()}
+      </div>
+    )
   }
 });
+
+  // <img src="http://icons.iconarchive.com/icons/robinweatherall/veggers/128/Tomato-icon.png"></img>

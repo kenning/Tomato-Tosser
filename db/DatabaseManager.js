@@ -11,8 +11,9 @@ var counter = 0;
 
 module.exports = {
   fetchNewQuestion : function() {
-  	if(counter === 6) counter = 0;
-    return questionList[counter++];
+  	if(counter === 3) counter = 0;
+    // return questionList[counter++];
+    return questionList[counter];
   },
   
   //TODO 

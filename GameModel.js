@@ -59,6 +59,8 @@ PubGameModel.prototype.startGame = function(lobbyData, singleTeam, singlePlayer,
   _.each(this.userObjects, function(userObject) {
     that.currentQuestionData.lobbyDisplay = false;
     that.currentQuestionData.lobbyListDisplay = false;
+    that.currentQuestionData.singleTeamGame = that.singleTeamGame;
+    that.currentQuestionData.singlePlayerGame = that.singlePlayerGame;
 
     callback(userObject.id, that.currentQuestionData);
   });
