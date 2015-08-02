@@ -13,7 +13,7 @@ module.exports = {
   fetchNewQuestion : function() {
   	if(counter === 3) counter = 0;
     // return questionList[counter++];
-    return questionList[counter];
+  return questionList[counter];
   },
   
   //TODO 
