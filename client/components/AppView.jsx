@@ -4,6 +4,7 @@ var LobbyView = require('./LobbyView.jsx');
 var LobbyListView = require('./LobbyListView.jsx');
 var UsersView = require('./UsersView.jsx');
 var TitleView = require('./TitleView.jsx');
+var TimerView = require('./TimerView.jsx');
 var ReviewView = require('./ReviewView.jsx');
 var GameView = require('./GameView.jsx');
 
@@ -106,9 +107,18 @@ module.exports = React.createClass({
                        singleTeamGame={this.state.singleTeamGame}
                        singlePlayerGame={this.state.singlePlayerGame}
                        onHostTeam={this.state.onHostTeam} />
+            <TimerView time={this.state.timeData} 
+                       gameStart={this.state.gameStart} 
+                       scores={this.state.scoreData} 
+                       singleTeamGame={this.state.singleTeamGame}
+                       endGame={this.endGame}
+                       onHostTeam={this.state.onHostTeam} />
             <GameView review={this.state.review}
                       reviewer={this.state.reviewer} 
-                      correctIndex={this.state.correctIndex}
+                      correctTitle={this.state.correctTitle}
+                      previousReview={this.state.previousReview}
+                      previousReviewer={this.state.previousReviewer}
+                      previousCorrectTitle={this.state.previousCorrectTitle}
                       titles={this.state.titles} 
                       url={this.state.url} />
           </div>

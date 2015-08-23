@@ -1,7 +1,7 @@
 var db = require('./db/DatabaseManager.js');
 var _ = require('underscore');
 
-var PubGameModel = function() {
+var TomatoGameModel = function() {
   this.hostTeamExtraTime = 30;
   this.notHostTeamExtraTime = 30;
   this.hostTeamScore = 0;
@@ -22,7 +22,7 @@ var PubGameModel = function() {
   //in game user info: tracks question id, hint ids
 }
 
-PubGameModel.prototype.startGame = function(lobbyData, singleTeam, singlePlayer, callback) {
+TomatoGameModel.prototype.startGame = function(lobbyData, singleTeam, singlePlayer, callback) {
 
   var that = this;
 
@@ -40,18 +40,18 @@ PubGameModel.prototype.startGame = function(lobbyData, singleTeam, singlePlayer,
   });
 
   if(!this.singleTeamGame) {
-    for(var i = 0; i < that.userObjects.length; i++) {
-      if(i < that.userObjects.length/2) {
-        this.hostTeamUserObjects.push(that.userObjects[i]);
-        this.hostTeamQuestionQueue.push(that.userObjects[i]);
+    for(var i = 0; i < this.userObjects.length; i++) {
+      if(i < this.userObjects.length/2) {
+        this.hostTeamUserObjects.push(this.userObjects[i]);
       } else {
-        this.notHostTeamUserObjects.push(that.userObjects[i]);
-        this.notHostTeamQuestionQueue.push(that.userObjects[i]);
+        this.notHostTeamUserObjects.push(this.userObjects[i]);
       }
     }
   }
 
   this.currentQuestionData = db.fetchNewQuestion();
+  var that = this;
+  this.currentQuestionData.review = this.shortenAndCleanReview(this.currentQuestionData.review);
   this.decorateWithGameData(this.currentQuestionData);
 
   var that = this;
@@ -66,21 +66,21 @@ PubGameModel.prototype.startGame = function(lobbyData, singleTeam, singlePlayer,
   });
 }
 
-PubGameModel.prototype.startSinglePlayerGame = function(lobbyData, callback) {
+TomatoGameModel.prototype.startSinglePlayerGame = function(lobbyData, callback) {
   this.startGame(lobbyData, true, true, callback);
 }
 
-PubGameModel.prototype.startSingleTeamGame = function(lobbyData, callback) {
+TomatoGameModel.prototype.startSingleTeamGame = function(lobbyData, callback) {
   this.startGame(lobbyData, true, false, callback);
 }
 
-PubGameModel.prototype.startMultipleTeamGame = function(lobbyData, callback) {
+TomatoGameModel.prototype.startMultipleTeamGame = function(lobbyData, callback) {
   this.startGame(lobbyData, false, false, callback);
 };
 
 
 
-PubGameModel.prototype.registerAnswer = function(lobbyData, userId, correct, callback) {
+TomatoGameModel.prototype.registerAnswer = function(lobbyData, userId, correct, callback) {
 
   var answererIsOnHostTeam = true;
   if(this.singleTeamGame) {  
@@ -105,17 +105,22 @@ PubGameModel.prototype.registerAnswer = function(lobbyData, userId, correct, cal
       answererIsOnHostTeam = false;
     }
   }
-
+  var previousQuestionData = this.currentQuestionData;
   this.currentQuestionData = db.fetchNewQuestion();
+  this.currentQuestionData.review = this.shortenAndCleanReview(this.currentQuestionData.review);
+  this.currentQuestionData.previousReview = previousQuestionData.review;
+  this.currentQuestionData.previousReviewer = previousQuestionData.reviewer;
+  this.currentQuestionData.previousCorrectTitle = previousQuestionData.correctTitle;
   this.decorateWithGameData(this.currentQuestionData);
-
+  this.currentQuestionData.previousAnswerer = userId;
+  var that = this;
   _.each(this.userObjects, function(userObject) {
-    callback(userObject.id, this.currentQuestionData);
+    callback(userObject.id, that.currentQuestionData);
   });
 
 };
 
-PubGameModel.prototype.decorateWithGameData = function(data) {
+TomatoGameModel.prototype.decorateWithGameData = function(data) {
   data.timeData = {
     hostTeamExtraTime : this.hostTeamExtraTime + this.gameStartTime.getTime()/1000,
     notHostTeamExtraTime : this.notHostTeamExtraTime + this.gameStartTime.getTime()/1000
@@ -134,9 +139,21 @@ PubGameModel.prototype.decorateWithGameData = function(data) {
   }
 };
 
-PubGameModel.prototype.endGame = function(callback) {
+TomatoGameModel.prototype.shortenAndCleanReview = function(data) {
+  console.log('shortening!');
+  console.log(data);
+  var maxLength = 300;
+  if(data.length > maxLength) {
+    var randomNumber = Math.floor(Math.random()*(data.length-maxLength));
+    data = '...' + data.substring(randomNumber, randomNumber + maxLength) + '...';
+  }
+  console.log(data);
+  return data;
+}
+
+TomatoGameModel.prototype.endGame = function(callback) {
   var winner = "your team"
   callback(winner+" wins!");
 };
 
-module.exports = PubGameModel;
+module.exports = TomatoGameModel;

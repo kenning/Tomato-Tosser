@@ -77,6 +77,6 @@ var LobbyEntryView = React.createClass({
 
   clickHandler: function() {
     if(!this.state.clickHandlersCanRun) return;
-    socketInterface.joinGameLobby(this.props.lobby);
+    clientSocket.joinGameLobby(this.props.lobby);
   }
 });
