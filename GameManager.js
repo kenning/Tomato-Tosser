@@ -4,6 +4,12 @@ var _ = require('underscore');
 
 //Setup for: only one game at a time
 var allUsers = {};
+
+// TODO 
+// why the fuck is there an allGames and an allLobbyGames 
+// What does allGames even fucking do
+// guhh
+// i guess this needs tests
 var allGames = {};
 var allLobbyGames = [];
 
@@ -32,7 +38,7 @@ module.exports = {
       userSocket.emit('newData', { username: allUsers[userId].name });
 
       //////////////////////////////////////////
-      /// Lobby actions
+      /// Utilities
       //////////////////////////////////////////
 
       var findLobby = function(callback) {
@@ -51,8 +57,31 @@ module.exports = {
         }
       }
 
+      // Shared code between startSingleTeamGame and
+      // startMultipleTeamGame
+      var startGame = function(gameModelCommand) {
+        findLobby(function(foundLobby) {
+          allGames[foundLobby.gameId] = foundLobby;
+          var newGameModel = new PubGameModel();
+          foundLobby.gameModel = newGameModel;
+          //Updates everyone's lobby data
+          io.emit('newData', {lobbies:allLobbyGames});        
+          //Removes this game from the lobby list (different from closing!)
+          var lobbyIndex = allLobbyGames.indexOf(foundLobby);
+          // if(lobbyIndex > -1) allLobbyGames.splice(lobbyIndex, 1);
+      
+          newGameModel[gameModelCommand]( foundLobby, 
+                                          function(id, newData) {
+            allUsers[id].socket.emit('newData', newData);
+          });
+	});
+      }	
+
+      //////////////////////////////////////////
+      /// Lobby actions
+      //////////////////////////////////////////
+
       userSocket.on('newGameLobby', function() {
-        console.log('newGameLobby');
         var newGameLobby = {
           users: [allUsers[userId].name],
           userIds: [userId],
@@ -62,7 +91,6 @@ module.exports = {
         }
         allLobbyGames.push(newGameLobby);
         allUsers[userId].gameId = newGameLobby.gameId;
-        //Emits new lobby data to everyone
         io.emit('newData', {lobbies:allLobbyGames});
         //Puts new lobby creator in their new lobby
         userSocket.emit('newData', {
@@ -136,8 +164,19 @@ module.exports = {
         });
       });
 
+      userSocket.on('startSingleTeamGame', function() {
+	startGame('startSingleTeamGame');
+      });
+
+      userSocket.on('startMultipleTeamGame', function() {
+	startGame('startMultipleTeamGame');
+      });
+
+      //////////////////////////////////////////
+      /// Single player game setup 
+      //////////////////////////////////////////
+
       userSocket.on('startSinglePlayerGame', function() {
-        console.log('startSinglePlayerGame');
         var newGameLobby = {
           users: [allUsers[userId].name],
           userIds: [userId],
@@ -149,42 +188,10 @@ module.exports = {
         allUsers[userId].gameId = newGameLobby.gameId;
         var newGameModel = new PubGameModel();
         newGameLobby.gameModel = newGameModel;
-        newGameModel.startSinglePlayerGame(newGameLobby, function(id, newData) {
-          // newData.lobbyDisplay = false;
-          // newData.lobbyListDisplay = false;
+        allGames[newGameLobby.gameId] = newGameLobby;
+        newGameModel.startSinglePlayerGame( newGameLobby, 
+                                            function(id, newData) {
           allUsers[id].socket.emit('newData', newData);
-        });
-      });
-
-      userSocket.on('startSingleTeamGame', function() {
-        findLobby(function(foundLobby) {
-          allGames[foundLobby.gameId] = foundLobby;
-          var newGameModel = new PubGameModel();
-          foundLobby.gameModel = newGameModel;
-          //Updates everyone's lobby data
-          io.emit('newData', {lobbies:allLobbyGames});        
-          //Removes this game from the lobby list (different from closing!)
-          var lobbyIndex = allLobbyGames.indexOf(foundLobby);
-          // if(lobbyIndex > -1) allLobbyGames.splice(lobbyIndex, 1);
-          newGameModel.startSingleTeamGame(foundLobby, function(id, newData) {
-            allUsers[id].socket.emit('newData', newData);
-          });
-        });
-      });
-
-      userSocket.on('startMultipleTeamGame', function() {
-        findLobby(function(foundLobby) {
-          allGames[foundLobby.gameId] = foundLobby;
-          var newGameModel = new PubGameModel();
-          foundLobby.gameModel = newGameModel;
-          //Updates everyone's lobby data
-          io.emit('newData', {lobbies:allLobbyGames});        
-          //Removes this game from the lobby list (different from closing!)
-          var lobbyIndex = allLobbyGames.indexOf(foundLobby);
-          // if(lobbyIndex > -1) allLobbyGames.splice(lobbyIndex, 1);
-          newGameModel.startMultipleTeamGame(foundLobby, function(id, newData) {
-            allUsers[id].socket.emit('newData', newData);
-          });
         });
       });
 
@@ -193,7 +200,9 @@ module.exports = {
       //////////////////////////////////////////
 
       userSocket.on('answer', function(correct) {
+        console.log(correct);
         findLobby(function(foundLobby) {   
+		// and why does it have to do this? stupid...
           var relevantGame = allGames[allUsers[userId].gameId];
           relevantGame.gameModel.registerAnswer(
             foundLobby, userId, correct.correct, function(id, newData) {
@@ -210,8 +219,6 @@ module.exports = {
         relevantGame.endGame(function(winnerData){
         });
       });
-
-      //////////////////////////////////////////
 
     });
   }

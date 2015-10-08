@@ -7,6 +7,7 @@ var TitleView = require('./TitleView.jsx');
 var TimerView = require('./TimerView.jsx');
 var ReviewView = require('./ReviewView.jsx');
 var GameView = require('./GameView.jsx');
+var PreviousReviewView = require('./PreviousReviewView.jsx');
 
 var socketInterface = require('../ClientSocketManager.js');
 
@@ -24,16 +25,28 @@ module.exports = React.createClass({
       singlePlayerGame: false,
       onHostTeam: true,
       gameHasEnded: false,
+      answeringTeamIsHost: null,
+      answeringTeamIsCorrect: null,
       review: "",
       titles: [],
-      correctIndex: null
+      correctIndex: null,
+      latestUpdateIncrementer: 0
     }
   },
   componentDidMount : function() {
     socketInterface.addNewDataListener(this.updateData);
   },
   updateData: function(data) {
-    console.log(data);
+    var incrementer = ++this.state.latestUpdateIncrementer;
+    var that = this;
+    setTimeout(function() {
+      if(incrementer && that.state.latestUpdateIncrementer === incrementer) {      
+        that.setState({
+          answeringTeamIsHost: null,
+          answeringTeamIsCorrect: null
+        });
+      }
+    }, 4000);
     this.setState(data);
   },
   displayLobbyList: function(){
@@ -44,6 +57,11 @@ module.exports = React.createClass({
   },
   endGame: function() {
     this.setState({gameHasEnded: true});
+  },
+  teamClass: function() {
+    if(this.state.singleTeamGame || this.state.singlePlayerGame) return '';
+    if(this.state.onHostTeam) return 'alpha';
+    return 'bravo';
   },
   render: function() {
     if (this.state.lobbyListDisplay) {
@@ -101,7 +119,7 @@ module.exports = React.createClass({
         }
       } else {
         return (
-          <div id="app-view">
+          <div className={this.teamClass()}>
             <UsersView username={this.state.username} 
                        gameStart={this.state.gameStart}
                        singleTeamGame={this.state.singleTeamGame}
@@ -116,11 +134,15 @@ module.exports = React.createClass({
             <GameView review={this.state.review}
                       reviewer={this.state.reviewer} 
                       correctTitle={this.state.correctTitle}
-                      previousReview={this.state.previousReview}
-                      previousReviewer={this.state.previousReviewer}
-                      previousCorrectTitle={this.state.previousCorrectTitle}
-                      titles={this.state.titles} 
-                      url={this.state.url} />
+                      titles={this.state.titles}  />
+            <PreviousReviewView previousReview={this.state.previousReview}
+                                previousReviewer={this.state.previousReviewer}
+                                previousCorrectTitle={this.state.previousCorrectTitle}
+                                onHostTeam={this.state.onHostTeam}
+                                answeringTeamIsHost={this.state.answeringTeamIsHost}
+                                answeringTeamIsCorrect={this.state.answeringTeamIsCorrect}
+                                singleTeamGame={this.state.singleTeamGame}
+                                singlePlayerGame={this.state.singlePlayerGame} />
           </div>
         )
       } 

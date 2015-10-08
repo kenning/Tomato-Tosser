@@ -51,7 +51,6 @@ var LobbyEntryView = React.createClass({
     this.setState({clickHandlersCanRun:true});
   },
   parseNames: function(){
-    console.log(this.props);
     if(!this.props.lobby) return "";
     if(this.props.lobby === "Loading!") return "";
 

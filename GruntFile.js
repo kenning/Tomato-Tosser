@@ -104,7 +104,9 @@ module.exports = function(grunt) {
 
     nodemon: {
       dev: {
-        script: 'bin/www'
+        script: 'bin/www',
+        ignore: ['./node_modules/**'],
+        watch: ['./*.js', 'public'],
       }
     },
 
@@ -134,25 +136,16 @@ module.exports = function(grunt) {
   /// Grunt tasks
   ////////////////////////////////////////////////////
 
-
   grunt.registerTask('build', [
-    'flow',
+    // 'flow',
+	// if we have to do flow we should obviously
+	// ignore npm modules and shit
     'sass',
     'cssmin', 
     'browserify'
   ]);
 
   grunt.registerTask('server-dev', function (target) {
-
-    this.requires(['flow', 'sass', 'cssmin', 'browserify']);
-
-    // var nodemon = grunt.util.spawn({
-    //      cmd: 'grunt',
-    //      grunt: true,
-    //      args: 'nodemon'
-    // });
-    // nodemon.stdout.pipe(process.stdout);
-    // nodemon.stderr.pipe(process.stderr);
 
     grunt.task.run([ 'concurrent']);
 

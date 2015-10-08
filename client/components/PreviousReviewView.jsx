@@ -5,27 +5,48 @@ module.exports = React.createClass({
     return {
       review: null,
       reviewer: null,
-      correctTitle: null,
-      answerStatus: null
+      correctTitle: null
     }
   },
-  renderCorrectness: function(correct) {
-    if(correct) return "Correct!";
-    else return "Incorrect!";
+  renderCorrectness: function() {
+    var returnString = '';
+    if(this.props.singlePlayerGame) {
+      if(this.props.answeringTeamIsCorrect) {
+        returnString += "You answered correctly! + 5 seconds!";
+      } else {
+        returnString += "You answered incorrectly! - 5 seconds!";
+      }
+    } else {
+      if(this.props.onHostTeam === this.props.answeringTeamIsHost) {
+        returnString += "Your team answered ";
+      } else {
+        returnString += "The other team answered ";
+      }
+      if(this.props.answeringTeamIsCorrect) {
+        returnString += "correctly! + 5 seconds!";
+      } else {
+        returnString += "incorrectly! - 5 seconds!";
+      }
+    }
+    return returnString;
   },
   render: function(renderType) {
-    if(this.props.answerStatus) {
+    if(this.props.answeringTeamIsHost !== null) {
       return (
         <div className="wrong">
           <h3>
-            {this.renderCorrectness(this.props.answerStatus === "right")}
+            {this.renderCorrectness()}
           </h3>
           <br/>
           <h3>
-            The correct answer was <b>{this.props.correctTitle}</b>!
+            The correct answer was <b>{this.props.previousCorrectTitle}</b>!
           </h3>
-          <h3>{this.props.review}</h3>
-          <cite>{this.props.reviewer}</cite>
+          <h4 className="italic">
+            <blockquote>
+              {this.props.previousReview}
+            </blockquote>
+            <cite>{this.props.previousReviewer}</cite>
+          </h4>
         </div>
       )
     }

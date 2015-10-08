@@ -2,21 +2,6 @@
 .top-block{
   display:inline-block;
 }
-  // Stupid tomato thing 
-.tomato{
-  display:relative;
-  animation: tomanimation .5s ease 0s 1 alternate;
-}
-/* Chrome, Safari, Opera */
-@-webkit-keyframes tomanimation {
-    from   {padding-left:500px;}
-    to     {padding-left:0px;}
-}
-/* Standard syntax */
-@keyframes tomanimation {
-    from   {padding-left:500px;}
-    to     {padding-left:0px;}
-}
 
 /* Review */
 blockquote {
@@ -60,9 +45,8 @@ blockquote cite:before {
     content: "\2014 \2009";
 }
 
-h2{
+.italic{
   font-style: italic;
-  font-family: 'Courgette', cursive;  
 }
 
 /* Title */
@@ -74,7 +58,13 @@ h2{
   margin:5px;
 }
 
-
+  // Team
+.alpha{
+  background: blue;
+}
+.bravo{
+  background: yellow;
+}
 
 // body{
 //   font-size: 14px;
@@ -225,11 +215,4 @@ h2{
 //   color: #FFDB4D;
 //   text-shadow: 0px 1px 0px #FFCC00, 0px 2px 0px #B28F00, 0px 3px 0px #665200;
 // }
-//   // Team
-// .alpha{
-//   background: url('/images/yellow_wood.png');
-// }
-// .bravo{
-//   background: url('/images/red_wood.png');
-//   color:#ccc;
-// }
+

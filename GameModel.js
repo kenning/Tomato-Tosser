@@ -2,8 +2,8 @@ var db = require('./db/DatabaseManager.js');
 var _ = require('underscore');
 
 var TomatoGameModel = function() {
-  this.hostTeamExtraTime = 30;
-  this.notHostTeamExtraTime = 30;
+  this.hostTeamExtraTime = 300000;
+  this.notHostTeamExtraTime = 300000;
   this.hostTeamScore = 0;
   this.notHostTeamScore = 0;
   this.gameStarted = false;
@@ -39,29 +39,34 @@ TomatoGameModel.prototype.startGame = function(lobbyData, singleTeam, singlePlay
     });
   });
 
-  if(!this.singleTeamGame) {
-    for(var i = 0; i < this.userObjects.length; i++) {
+  for(var i = 0; i < this.userObjects.length; i++) {
+    if(!this.singleTeamGame) {
       if(i < this.userObjects.length/2) {
         this.hostTeamUserObjects.push(this.userObjects[i]);
       } else {
         this.notHostTeamUserObjects.push(this.userObjects[i]);
       }
+    } else {
+      this.hostTeamUserObjects.push(this.userObjects[i]);
     }
   }
 
   this.currentQuestionData = db.fetchNewQuestion();
   var that = this;
-  this.currentQuestionData.review = this.shortenAndCleanReview(this.currentQuestionData.review);
-  this.decorateWithGameData(this.currentQuestionData);
+  this.shortenAndCleanReview();
+
+  this.currentQuestionData.lobbyDisplay = false;
+  this.currentQuestionData.lobbyListDisplay = false;
+  this.currentQuestionData.singleTeamGame = this.singleTeamGame;
+  this.currentQuestionData.singlePlayerGame = this.singlePlayerGame;
 
   var that = this;
 
-  _.each(this.userObjects, function(userObject) {
-    that.currentQuestionData.lobbyDisplay = false;
-    that.currentQuestionData.lobbyListDisplay = false;
-    that.currentQuestionData.singleTeamGame = that.singleTeamGame;
-    that.currentQuestionData.singlePlayerGame = that.singlePlayerGame;
+  console.log('that.hostTeamUserObjects');
+  console.log(that.hostTeamUserObjects);
 
+  _.each(this.userObjects, function(userObject) {
+    that.decorateWithGameData(userObject.id)
     callback(userObject.id, that.currentQuestionData);
   });
 }
@@ -81,74 +86,104 @@ TomatoGameModel.prototype.startMultipleTeamGame = function(lobbyData, callback) 
 
 
 TomatoGameModel.prototype.registerAnswer = function(lobbyData, userId, correct, callback) {
+  var that = this;
+
+  console.log(correct);
+
+  // the problem with this is that it tries to figure out which team the host is on 
+  // and then it sets everyone's team to that user's team
 
   var answererIsOnHostTeam = true;
   if(this.singleTeamGame) {  
     if(correct) {
       this.hostTeamExtraTime += 5;
       this.hostTeamScore++;    
+    } else {
+      this.hostTeamExtraTime -= 5;      
     }
   } else {
     var appropriateTeam;
-    that = this;
+    console.log(that.hostTeamUserObjects);
+    console.log('that.hostTeamUserObjects');
+    console.log('userId');
+    console.log(userId);
     if(!!_.find(that.hostTeamUserObjects, 
       function(hostObj) {return hostObj.id === userId})){
       if(correct) {
         this.hostTeamExtraTime += 5;
         this.hostTeamScore++;
+      } else {
+        this.hostTeamExtraTime -= 5;
       }
     } else {
       if(correct) {
         this.notHostTeamExtraTime += 5;
         this.notHostTeamScore++;
+      } else {
+        this.hostTeamExtraTime -= 5;
       }
       answererIsOnHostTeam = false;
     }
   }
-  var previousQuestionData = this.currentQuestionData;
-  this.currentQuestionData = db.fetchNewQuestion();
-  this.currentQuestionData.review = this.shortenAndCleanReview(this.currentQuestionData.review);
-  this.currentQuestionData.previousReview = previousQuestionData.review;
-  this.currentQuestionData.previousReviewer = previousQuestionData.reviewer;
-  this.currentQuestionData.previousCorrectTitle = previousQuestionData.correctTitle;
-  this.decorateWithGameData(this.currentQuestionData);
-  this.currentQuestionData.previousAnswerer = userId;
+  
+  this.fetchQuestionAndDecorateWithPreviousQuestionData();
+  
+  this.shortenAndCleanReview();
+  // this.currentQuestionData.previousAnswerer = userId;
+  this.currentQuestionData.answeringTeamIsCorrect = correct;
+  console.log(userId);
+  console.log(that.hostTeamUserObjects);
+  this.currentQuestionData.answeringTeamIsHost = !!_.find(that.hostTeamUserObjects, 
+    function(hostObj) {return hostObj.id === userId});
+
   var that = this;
   _.each(this.userObjects, function(userObject) {
+    that.decorateWithGameData(userObject.id);
     callback(userObject.id, that.currentQuestionData);
   });
-
 };
 
-TomatoGameModel.prototype.decorateWithGameData = function(data) {
-  data.timeData = {
+TomatoGameModel.prototype.decorateWithGameData = function(userId) {
+  this.currentQuestionData.timeData = {
     hostTeamExtraTime : this.hostTeamExtraTime + this.gameStartTime.getTime()/1000,
     notHostTeamExtraTime : this.notHostTeamExtraTime + this.gameStartTime.getTime()/1000
   };
-  data.scoreData = {
+  this.currentQuestionData.scoreData = {
     hostTeamScore : this.hostTeamScore,
     notHostTeamScore : this.notHostTeamScore
   };
 
   if(this.singleTeamGame) {
-    data.onHostTeam = true;
+    this.currentQuestionData.onHostTeam = true;
   } else {
     var that = this;
-    data.onHostTeam = !!_.find(that.hostTeamUserObjects, 
-      function(hostObj) {return hostObj.id === data.id});
+    this.currentQuestionData.onHostTeam = !!_.find(that.hostTeamUserObjects, 
+      function(hostObj) {return hostObj.id === userId});
   }
+  console.log(this.hostTeamUserObjects);
+  console.log(userId);
 };
 
-TomatoGameModel.prototype.shortenAndCleanReview = function(data) {
+TomatoGameModel.prototype.fetchQuestionAndDecorateWithPreviousQuestionData = function() {
+  var lastReview = this.currentQuestionData.review;
+  var lastReviewer = this.currentQuestionData.reviewer;
+  var lastTitle = this.currentQuestionData.correctTitle;
+
+  this.currentQuestionData = db.fetchNewQuestion();
+
+  this.currentQuestionData.previousReview = lastReview;
+  this.currentQuestionData.previousReviewer = lastReviewer;
+  this.currentQuestionData.previousCorrectTitle = lastTitle;
+}
+
+TomatoGameModel.prototype.shortenAndCleanReview = function() {
   console.log('shortening!');
-  console.log(data);
   var maxLength = 300;
-  if(data.length > maxLength) {
-    var randomNumber = Math.floor(Math.random()*(data.length-maxLength));
-    data = '...' + data.substring(randomNumber, randomNumber + maxLength) + '...';
+  if(this.currentQuestionData.review.length > maxLength) {
+    var randomNumber = Math.floor(Math.random()*(this.currentQuestionData.review.length-maxLength));
+    this.currentQuestionData.review = '...' + this.currentQuestionData.review.substring(randomNumber, randomNumber + maxLength) + '...';
   }
-  console.log(data);
-  return data;
+  return this.currentQuestionData.review;
 }
 
 TomatoGameModel.prototype.endGame = function(callback) {
