@@ -20,10 +20,14 @@ module.exports = function(grunt) {
     },
 
     copy: {
-      main: {
-        src: 'public/favicon.ico',
-        dest: 'client/favicon.ico'
+      favicon: {
+        src: 'client/favicon.ico',
+        dest: 'public/favicon.ico'
       },
+      index: {
+        src: 'client/index.html',
+        dest: 'public/index.html'
+      }
     },
 
     uglify: {
@@ -143,6 +147,8 @@ module.exports = function(grunt) {
   ////////////////////////////////////////////////////
   /// Grunt tasks
   ////////////////////////////////////////////////////
+  
+  grunt.registerTask('copy-all', ['copy:index', 'copy:favicon']);
 
   grunt.registerTask('build', [
     // 'flow',
@@ -151,7 +157,7 @@ module.exports = function(grunt) {
     'sass',
     'cssmin', 
     'browserify',
-    'copy'
+    'copy-all'
   ]);
 
   grunt.registerTask('server-dev', function (target) {
