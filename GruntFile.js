@@ -19,6 +19,13 @@ module.exports = function(grunt) {
       }
     },
 
+    copy: {
+      main: {
+        src: 'public/favicon.ico',
+        dest: 'client/favicon.ico'
+      },
+    },
+
     uglify: {
       dist: {
         files: {
@@ -33,7 +40,7 @@ module.exports = function(grunt) {
       },
       dist: {
         files: {
-          'client/built/app.css': 'client/sass/app.scss'
+          'client/built/app.css': 'client/sass/*.scss'
         }
       }
     },
@@ -105,8 +112,9 @@ module.exports = function(grunt) {
     nodemon: {
       dev: {
         script: 'bin/www',
-        ignore: ['./node_modules/**'],
-        watch: ['./*.js', 'public'],
+        options: {
+          ignore: ['node_modules/**'],
+        }
       }
     },
 
@@ -119,7 +127,7 @@ module.exports = function(grunt) {
       //   }
       // }
       nodemon: {
-        command: 'nodemon',
+        command: 'nodemon:dev',
         options: {
           stdout: true,
           stderr: true
@@ -142,7 +150,8 @@ module.exports = function(grunt) {
 	// ignore npm modules and shit
     'sass',
     'cssmin', 
-    'browserify'
+    'browserify',
+    'copy'
   ]);
 
   grunt.registerTask('server-dev', function (target) {
