@@ -1,3 +1,3 @@
 # Tomato Tosser
 
-A game using the rottentomatoes API. Play with your friends or on your own!
+A game using data from steam. Play with your friends or by yourself!
