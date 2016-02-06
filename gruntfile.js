@@ -9,7 +9,7 @@ module.exports = function(grunt) {
     browserify: {
       dist: {
         files: {
-          'public/scripts/<%= pkg.name %>.js': ['client/app.js'],
+          'dist/scripts/<%= pkg.name %>.js': ['client/app.js'],
         },
         options: {
           debug: true,
@@ -22,18 +22,22 @@ module.exports = function(grunt) {
     copy: {
       favicon: {
         src: 'client/favicon.ico',
-        dest: 'public/favicon.ico'
+        dest: 'dist/favicon.ico'
       },
       index: {
         src: 'client/index.html',
-        dest: 'public/index.html'
+        dest: 'dist/index.html'
+      },
+      css: {
+        src: 'client/css/*.css',
+        dest: 'dist/built/*.css'
       }
     },
 
     uglify: {
       dist: {
         files: {
-          'public/scripts/<%= pkg.name %>.min.js' : ['public/scripts/<%= pkg.name %>.js']
+          'dist/scripts/<%= pkg.name %>.min.js' : ['dist/scripts/<%= pkg.name %>.js']
         }
       }
     },
@@ -44,7 +48,7 @@ module.exports = function(grunt) {
       },
       dist: {
         files: {
-          'client/built/app.css': 'client/sass/*.scss'
+          'dist/built/*.css': 'client/sass/*.scss'
         }
       }
     },
@@ -52,7 +56,7 @@ module.exports = function(grunt) {
     cssmin: {
       target: {
         files: {
-          'public/stylesheets/app.css' : ['client/built/app.css']
+          'dist/stylesheets/app.css' : ['dist/built/app.css']
         }
       }
     },
@@ -66,7 +70,7 @@ module.exports = function(grunt) {
         jshintrc: 'test/.jshintrc',
         ignores: [
           'client/bower_components/*.js',
-          'client/built/**/*.js',
+          'dist/built/**/*.js',
           'client/js/jquery/**/*.js',
           'client/js/plugins/**/*.js',
           'client/js/angular-nouislider.js',
