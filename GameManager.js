@@ -52,11 +52,21 @@ module.exports = {
         }
       }
 
+      // leaveLobby is declared out here, where the closure will actually
+      // change the main lobby list
+      var leaveLobby = function() {
+        console.log(userId);
+        console.log(allUsers[userId]);
+        var relevantLobby = allLobbiesHash[allUsers[userId].gameId];
+        var thisUserIndex = relevantLobby.userIds.indexOf(userId);
+        relevantLobby.users.splice(thisUserIndex, 1);
+        relevantLobby.userIds.splice(thisUserIndex, 1);
+      }
+
       // Shared code between startSingleTeamGame and
       // startMultipleTeamGame
       var startGame = function(gameModelCommand) {
         findLobby(function(foundLobby) {
-          allLobbiesHash[foundLobby.gameId] = foundLobby;
           var newGameModel = new PubGameModel();
           foundLobby.gameModel = newGameModel;
           //Updates everyone's lobby data
@@ -88,6 +98,7 @@ module.exports = {
           gameModel: null,
           closed: false
         }
+        allLobbiesHash[newGameLobby.gameId] = newGameLobby;
         visibleLobbies.push(newGameLobby);
         allUsers[userId].gameId = newGameLobby.gameId;
         io.emit('newData', {lobbies:visibleLobbies});
@@ -114,18 +125,14 @@ module.exports = {
       });
 
       userSocket.on('leaveGameLobby', function() {
-        findLobby(function(foundLobby) {
-          var thisUserIndex = foundLobby.userIds.indexOf(userId);
-          foundLobbyusers.splice(thisUserIndex, 1);
-          foundLobbyuserIds.splice(thisUserIndex, 1);
-          //Updates everyone's lobby data
-          io.emit('newData', {lobbies:visibleLobbies});
-          //Puts lobby leaver back in the lobby list
-          userSocket.emit('newData', {
-            lobbies:visibleLobbies,
-            lobbyDisplay: false,
-            lobbyListDisplay: true
-          });
+        leaveLobby();
+        //Updates everyone's lobby data
+        io.emit('newData', {lobbies:visibleLobbies});
+        //Puts lobby leaver back in the lobby list
+        userSocket.emit('newData', {
+          lobbies:visibleLobbies,
+          lobbyDisplay: false,
+          lobbyListDisplay: true
         });
       });
 

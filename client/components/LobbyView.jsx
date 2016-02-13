@@ -22,7 +22,7 @@ module.exports = React.createClass({
           </button>
         </div>
         <div>
-          <button className="button light-wood" onClick={this.props.displayLobbyList}>
+          <button className="button light-wood" onClick={this.props.leaveLobby}>
             Go back
           </button>
         </div>
@@ -42,7 +42,8 @@ module.exports = React.createClass({
     if(!this.props || !this.props.lobby) {
       return (<div></div>)
     } else if(this.props.lobby.closed) {
-      if(this.props.lobby.users.length > 3 && this.props.lobby.users.length%2 === 0) {
+      if(this.props.lobby.users.length > 3 && 
+         this.props.lobby.users.length%2 === 0) {
         return(
           <div className="no-padding">
             <button className="button light-wood" onClick={this.startSingleTeamGame}>

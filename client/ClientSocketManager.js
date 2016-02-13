@@ -24,7 +24,7 @@ module.exports = {
   joinGameLobby: function(lobby) {
     socketServer.emit('joinGameLobby', lobby);
   },
-  leaveGameLobby: function(lobby) {
+  leaveGameLobby: function() {
     socketServer.emit('leaveGameLobby');
   },
   startSinglePlayerGame: function() {

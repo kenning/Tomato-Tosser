@@ -22,7 +22,8 @@ var TomatoGameModel = function() {
   //in game user info: tracks question id, hint ids
 }
 
-TomatoGameModel.prototype.startGame = function(lobbyData, singleTeam, singlePlayer, callback) {
+TomatoGameModel.prototype.startGame = 
+  function(lobbyData, singleTeam, singlePlayer, callback) {
 
   var that = this;
 

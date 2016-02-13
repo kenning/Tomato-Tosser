@@ -50,11 +50,9 @@ module.exports = React.createClass({
     }, 4000);
     this.setState(data);
   },
-  displayLobbyList: function(){
-    this.setState({
-      lobbyListDisplay: true,
-      lobbyDisplay: false
-    });
+  leaveLobby: function(){
+    console.log('huh');
+    socketInterface.leaveGameLobby();
   },
   endGame: function() {
     this.setState({gameHasEnded: true});
@@ -88,7 +86,7 @@ module.exports = React.createClass({
          gameStart={this.state.gameStart}
          singleTeamGame={this.state.singleTeamGame}
          onHostTeam={this.state.onHostTeam}
-         displayLobbyList={this.displayLobbyList} />)
+         leaveLobby={this.leaveLobby} />)
     } else {
     //User is in the game view
       if (this.state.gameHasEnded) {
