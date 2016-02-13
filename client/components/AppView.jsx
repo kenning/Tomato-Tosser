@@ -37,6 +37,7 @@ module.exports = React.createClass({
     socketInterface.addNewDataListener(this.updateData);
   },
   updateData: function(data) {
+    console.log(data);
     var incrementer = ++this.state.latestUpdateIncrementer;
     var that = this;
     setTimeout(function() {
@@ -67,11 +68,11 @@ module.exports = React.createClass({
     if (this.state.lobbyListDisplay) {
     //User is in the lobby list view
       return (<LobbyListView lobbies={this.state.lobbies} 
-                             currentLobby={this.state.currentLobby}
-                             gameStart={this.state.gameStart}
-                             singleTeamGame={this.state.singleTeamGame}
-                             onHostTeam={this.state.onHostTeam}
-                             username={this.state.username} />)
+         currentLobby={this.state.currentLobby}
+         gameStart={this.state.gameStart}
+         singleTeamGame={this.state.singleTeamGame}
+         onHostTeam={this.state.onHostTeam}
+         username={this.state.username} />)
     } else if (this.state.lobbyDisplay) {
     //User is in the lobby display view
       var yourLobby = null;
@@ -83,11 +84,11 @@ module.exports = React.createClass({
         }
       }
       return (<LobbyView lobby={yourLobby} 
-                         username={this.state.username}
-                         gameStart={this.state.gameStart}
-                         singleTeamGame={this.state.singleTeamGame}
-                         onHostTeam={this.state.onHostTeam}
-                         displayLobbyList={this.displayLobbyList} />)
+         username={this.state.username}
+         gameStart={this.state.gameStart}
+         singleTeamGame={this.state.singleTeamGame}
+         onHostTeam={this.state.onHostTeam}
+         displayLobbyList={this.displayLobbyList} />)
     } else {
     //User is in the game view
       if (this.state.gameHasEnded) {
@@ -119,30 +120,31 @@ module.exports = React.createClass({
         }
       } else {
         return (
-          <div className={this.teamClass()}>
+          <div>
             <UsersView username={this.state.username} 
-                       gameStart={this.state.gameStart}
-                       singleTeamGame={this.state.singleTeamGame}
-                       singlePlayerGame={this.state.singlePlayerGame}
-                       onHostTeam={this.state.onHostTeam} />
+              gameStart={this.state.gameStart}
+              singleTeamGame={this.state.singleTeamGame}
+              singlePlayerGame={this.state.singlePlayerGame}
+              teamClass={this.teamClass()}
+              onHostTeam={this.state.onHostTeam} />
             <TimerView time={this.state.timeData} 
-                       gameStart={this.state.gameStart} 
-                       scores={this.state.scoreData} 
-                       singleTeamGame={this.state.singleTeamGame}
-                       endGame={this.endGame}
-                       onHostTeam={this.state.onHostTeam} />
+              gameStart={this.state.gameStart} 
+              scores={this.state.scoreData} 
+              singleTeamGame={this.state.singleTeamGame}
+              endGame={this.endGame}
+              onHostTeam={this.state.onHostTeam} />
             <GameView review={this.state.review}
-                      reviewer={this.state.reviewer} 
-                      correctTitle={this.state.correctTitle}
-                      titles={this.state.titles}  />
+              reviewer={this.state.reviewer} 
+              correctTitle={this.state.correctTitle}
+              titles={this.state.titles}  />
             <PreviousReviewView previousReview={this.state.previousReview}
-                                previousReviewer={this.state.previousReviewer}
-                                previousCorrectTitle={this.state.previousCorrectTitle}
-                                onHostTeam={this.state.onHostTeam}
-                                answeringTeamIsHost={this.state.answeringTeamIsHost}
-                                answeringTeamIsCorrect={this.state.answeringTeamIsCorrect}
-                                singleTeamGame={this.state.singleTeamGame}
-                                singlePlayerGame={this.state.singlePlayerGame} />
+              previousReviewer={this.state.previousReviewer}
+              previousCorrectTitle={this.state.previousCorrectTitle}
+              onHostTeam={this.state.onHostTeam}
+              answeringTeamIsHost={this.state.answeringTeamIsHost}
+              answeringTeamIsCorrect={this.state.answeringTeamIsCorrect}
+              singleTeamGame={this.state.singleTeamGame}
+              singlePlayerGame={this.state.singlePlayerGame} />
           </div>
         )
       } 

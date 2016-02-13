@@ -59,11 +59,9 @@ TomatoGameModel.prototype.startGame = function(lobbyData, singleTeam, singlePlay
   this.currentQuestionData.lobbyListDisplay = false;
   this.currentQuestionData.singleTeamGame = this.singleTeamGame;
   this.currentQuestionData.singlePlayerGame = this.singlePlayerGame;
+  this.currentQuestionData.gameStart = true;
 
   var that = this;
-
-  console.log('that.hostTeamUserObjects');
-  console.log(that.hostTeamUserObjects);
 
   _.each(this.userObjects, function(userObject) {
     that.decorateWithGameData(userObject.id)
@@ -88,11 +86,6 @@ TomatoGameModel.prototype.startMultipleTeamGame = function(lobbyData, callback) 
 TomatoGameModel.prototype.registerAnswer = function(lobbyData, userId, correct, callback) {
   var that = this;
 
-  console.log(correct);
-
-  // the problem with this is that it tries to figure out which team the host is on 
-  // and then it sets everyone's team to that user's team
-
   var answererIsOnHostTeam = true;
   if(this.singleTeamGame) {  
     if(correct) {
@@ -103,10 +96,6 @@ TomatoGameModel.prototype.registerAnswer = function(lobbyData, userId, correct, 
     }
   } else {
     var appropriateTeam;
-    console.log(that.hostTeamUserObjects);
-    console.log('that.hostTeamUserObjects');
-    console.log('userId');
-    console.log(userId);
     if(!!_.find(that.hostTeamUserObjects, 
       function(hostObj) {return hostObj.id === userId})){
       if(correct) {
@@ -125,14 +114,11 @@ TomatoGameModel.prototype.registerAnswer = function(lobbyData, userId, correct, 
       answererIsOnHostTeam = false;
     }
   }
-  
   this.fetchQuestionAndDecorateWithPreviousQuestionData();
   
   this.shortenAndCleanReview();
   // this.currentQuestionData.previousAnswerer = userId;
   this.currentQuestionData.answeringTeamIsCorrect = correct;
-  console.log(userId);
-  console.log(that.hostTeamUserObjects);
   this.currentQuestionData.answeringTeamIsHost = !!_.find(that.hostTeamUserObjects, 
     function(hostObj) {return hostObj.id === userId});
 
@@ -160,8 +146,6 @@ TomatoGameModel.prototype.decorateWithGameData = function(userId) {
     this.currentQuestionData.onHostTeam = !!_.find(that.hostTeamUserObjects, 
       function(hostObj) {return hostObj.id === userId});
   }
-  console.log(this.hostTeamUserObjects);
-  console.log(userId);
 };
 
 TomatoGameModel.prototype.fetchQuestionAndDecorateWithPreviousQuestionData = function() {
@@ -177,7 +161,6 @@ TomatoGameModel.prototype.fetchQuestionAndDecorateWithPreviousQuestionData = fun
 }
 
 TomatoGameModel.prototype.shortenAndCleanReview = function() {
-  console.log('shortening!');
   var maxLength = 300;
   if(this.currentQuestionData.review.length > maxLength) {
     var randomNumber = Math.floor(Math.random()*(this.currentQuestionData.review.length-maxLength));

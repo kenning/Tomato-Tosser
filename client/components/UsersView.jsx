@@ -15,14 +15,14 @@ module.exports = React.createClass({
     )
   },
   renderTeamName: function() {
-  	return this.props.onHostTeam ? (<b>Alpha team</b>) : (<b>Bravo team</b>);
+  	return this.props.onHostTeam ? (<b>Red team</b>) : (<b>Blue team</b>);
   },
   renderUsersBox: function() {
     if(this.props.singlePlayerGame) return (<span></span>);
     if(this.props.singleTeamGame || !this.props.gameStart) {
       return (
         <div className="top-block">
-          You are: <b>{this.props.username}</b>
+          Your username: <b>{this.props.username}</b>
         </div>
       )
     } 
@@ -30,7 +30,10 @@ module.exports = React.createClass({
       <div className="top-block">
         You are: <b>{this.props.username}</b>
         <br/>
-        Your team is: {this.renderTeamName()}
+        Your team is: 
+        <span className={this.props.teamClass}>
+          {this.renderTeamName()}
+        </span>
       </div>
     )
   }

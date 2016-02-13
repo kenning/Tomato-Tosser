@@ -8,8 +8,6 @@ var socketInterface = require('../ClientSocketManager.js');
 module.exports = React.createClass({
   render: function(renderType) {
     var that = this;
-    console.log(this.props.titles);
-    console.log(this.props.correctTitle);
     return (
       <div>
         <ReviewView review={this.props.review}
@@ -33,11 +31,9 @@ module.exports = React.createClass({
     )
   },
   answerRight: function() {
-    console.log('answered right!');
     socketInterface.answer(true);
   },
   answerWrong: function() {
-    console.log('answered wrong!');
     socketInterface.answer(false);
   },
 });

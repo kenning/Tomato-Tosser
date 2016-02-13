@@ -50,7 +50,7 @@ module.exports = React.createClass({
             </button>
             <br/>
             <button className="button light-wood" onClick={this.startMultipleTeamGame}>
-             Start team game! (Not working yet)
+             Start team game!
             </button>
             <br/>
             <button className="button light-wood" onClick={this.openGameLobby}>

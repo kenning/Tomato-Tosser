@@ -28,10 +28,14 @@ module.exports = function(grunt) {
         src: 'client/index.html',
         dest: 'dist/index.html'
       },
-      css: {
-        src: 'client/css/*.css',
-        dest: 'dist/built/*.css'
-      }
+      foundation: {
+        src: 'client/css/foundation.min.css',
+        dest: 'dist/built/foundation.min.css'
+      },
+      animationCss: {
+        src: 'client/css/animation.css',
+        dest: 'dist/built/animation.css'
+      },
     },
 
     uglify: {
@@ -48,7 +52,7 @@ module.exports = function(grunt) {
       },
       dist: {
         files: {
-          'dist/built/*.css': 'client/sass/*.scss'
+          'dist/built/app.css': 'client/sass/app.scss'
         }
       }
     },
@@ -56,7 +60,7 @@ module.exports = function(grunt) {
     cssmin: {
       target: {
         files: {
-          'dist/stylesheets/app.css' : ['dist/built/app.css']
+          'dist/stylesheets/app.css' : [ 'dist/built/*.css' ]
         }
       }
     },
@@ -64,10 +68,9 @@ module.exports = function(grunt) {
     // Testing
 
     jshint: {
-      files: ['client/js/*.js', 'client/components/**/*.js'],
+      files: ['*.js'],
       options: {
         force: 'false',
-        jshintrc: 'test/.jshintrc',
         ignores: [
           'client/bower_components/*.js',
           'dist/built/**/*.js',
@@ -152,16 +155,14 @@ module.exports = function(grunt) {
   /// Grunt tasks
   ////////////////////////////////////////////////////
   
-  grunt.registerTask('copy-all', ['copy:index', 'copy:favicon']);
-
   grunt.registerTask('build', [
     // 'flow',
 	// if we have to do flow we should obviously
 	// ignore npm modules and shit
+    'copy',
     'sass',
     'cssmin', 
     'browserify',
-    'copy-all'
   ]);
 
   grunt.registerTask('server-dev', function (target) {
@@ -176,6 +177,7 @@ module.exports = function(grunt) {
   ]);
 
   grunt.registerTask('test', [
+    'flow',
     'jshint'
   ]);
 

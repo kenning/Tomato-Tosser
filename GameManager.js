@@ -5,13 +5,8 @@ var _ = require('underscore');
 //Setup for: only one game at a time
 var allUsers = {};
 
-// TODO 
-// why the fuck is there an allGames and an allLobbyGames 
-// What does allGames even fucking do
-// guhh
-// i guess this needs tests
-var allGames = {};
-var allLobbyGames = [];
+var allLobbiesHash = {};
+var visibleLobbies = [];
 
 module.exports = {
   initializeGameManager : function(expressServer) {
@@ -33,7 +28,7 @@ module.exports = {
         socket: userSocket
       }
       
-      io.emit('newData', { lobbies:allLobbyGames });
+      io.emit('newData', { lobbies:visibleLobbies });
 
       userSocket.emit('newData', { username: allUsers[userId].name });
 
@@ -43,16 +38,16 @@ module.exports = {
 
       var findLobby = function(callback) {
         var lobbyId = allUsers[userId].gameId;
-        for(var i = 0; i < allLobbyGames.length; i++){
-          if(lobbyId === allLobbyGames[i].gameId) {
-            if(allLobbyGames[i].userIds.indexOf(userId) > -1){
+        for(var i = 0; i < visibleLobbies.length; i++){
+          if(lobbyId === visibleLobbies[i].gameId) {
+            if(visibleLobbies[i].userIds.indexOf(userId) > -1){
               // They are in this lobby!
-              callback(allLobbyGames[i], i);
+              callback(visibleLobbies[i], i);
               break;
             }
-            allLobbyGames[i].userIds.push(userId);
-            allLobbyGames[i].users.push(allUsers[userId].name);
-            callback(allLobbyGames[i], i);
+            visibleLobbies[i].userIds.push(userId);
+            visibleLobbies[i].users.push(allUsers[userId].name);
+            callback(visibleLobbies[i], i);
           }
         }
       }
@@ -61,14 +56,18 @@ module.exports = {
       // startMultipleTeamGame
       var startGame = function(gameModelCommand) {
         findLobby(function(foundLobby) {
-          allGames[foundLobby.gameId] = foundLobby;
+          allLobbiesHash[foundLobby.gameId] = foundLobby;
           var newGameModel = new PubGameModel();
           foundLobby.gameModel = newGameModel;
           //Updates everyone's lobby data
-          io.emit('newData', {lobbies:allLobbyGames});        
-          //Removes this game from the lobby list (different from closing!)
-          var lobbyIndex = allLobbyGames.indexOf(foundLobby);
-          // if(lobbyIndex > -1) allLobbyGames.splice(lobbyIndex, 1);
+          io.emit('newData', {lobbies:visibleLobbies});        
+          
+          //Removes this game from visibleLobbies (different from closing!)
+          // note: i hope uncommenting this didnt break anything else.
+          // on 2/13/2016 i removed it because i took the findLobby cb out of
+          // the answer function 
+          var lobbyIndex = visibleLobbies.indexOf(foundLobby);
+          if(lobbyIndex > -1) visibleLobbies.splice(lobbyIndex, 1);
       
           newGameModel[gameModelCommand]( foundLobby, 
                                           function(id, newData) {
@@ -89,12 +88,12 @@ module.exports = {
           gameModel: null,
           closed: false
         }
-        allLobbyGames.push(newGameLobby);
+        visibleLobbies.push(newGameLobby);
         allUsers[userId].gameId = newGameLobby.gameId;
-        io.emit('newData', {lobbies:allLobbyGames});
+        io.emit('newData', {lobbies:visibleLobbies});
         //Puts new lobby creator in their new lobby
         userSocket.emit('newData', {
-          lobbies: allLobbyGames,
+          lobbies: visibleLobbies,
           lobbyDisplay: true,
           lobbyListDisplay: false
         });
@@ -104,10 +103,10 @@ module.exports = {
         allUsers[userId].gameId = lobby.gameId;
         findLobby(function(foundLobby){
           //Updates everyone's lobby data
-          io.emit('newData', {lobbies:allLobbyGames});
+          io.emit('newData', {lobbies:visibleLobbies});
           //Puts lobby joiner in their new lobby
           userSocket.emit('newData', {
-            lobbies:allLobbyGames,
+            lobbies:visibleLobbies,
             lobbyDisplay: true,
             lobbyListDisplay: false
           });
@@ -120,10 +119,10 @@ module.exports = {
           foundLobbyusers.splice(thisUserIndex, 1);
           foundLobbyuserIds.splice(thisUserIndex, 1);
           //Updates everyone's lobby data
-          io.emit('newData', {lobbies:allLobbyGames});
+          io.emit('newData', {lobbies:visibleLobbies});
           //Puts lobby leaver back in the lobby list
           userSocket.emit('newData', {
-            lobbies:allLobbyGames,
+            lobbies:visibleLobbies,
             lobbyDisplay: false,
             lobbyListDisplay: true
           });
@@ -135,12 +134,12 @@ module.exports = {
           _.each(foundLobby.userIds, function(foundLobbyUserId) {
             allUsers[userId].gameId = null;
           });
-          allLobbyGames.splice(foundLobbyIndex, 1);
+          visibleLobbies.splice(foundLobbyIndex, 1);
           //Updates everyone's lobby data
-          io.emit('newData', {lobbies:allLobbyGames});
+          io.emit('newData', {lobbies:visibleLobbies});
           //Puts lobby leaver back in the lobby list
           userSocket.emit('newData', {
-            lobbies:allLobbyGames,
+            lobbies:visibleLobbies,
             lobbyDisplay: false,
             lobbyListDisplay: true
           });
@@ -152,7 +151,7 @@ module.exports = {
         findLobby(function(foundLobby) {
           foundLobby.closed = true;
           //Updates everyone's lobby data
-          io.emit('newData', {lobbies:allLobbyGames});
+          io.emit('newData', {lobbies:visibleLobbies});
         });
       });
 
@@ -160,7 +159,7 @@ module.exports = {
         findLobby(function(foundLobby) {
           foundLobby.closed = false;
           //Updates everyone's lobby data
-          io.emit('newData', {lobbies:allLobbyGames});
+          io.emit('newData', {lobbies:visibleLobbies});
         });
       });
 
@@ -184,11 +183,11 @@ module.exports = {
           gameModel: null,
           closed: true
         }
-        allLobbyGames.push(newGameLobby);
+        visibleLobbies.push(newGameLobby);
         allUsers[userId].gameId = newGameLobby.gameId;
         var newGameModel = new PubGameModel();
         newGameLobby.gameModel = newGameModel;
-        allGames[newGameLobby.gameId] = newGameLobby;
+        allLobbiesHash[newGameLobby.gameId] = newGameLobby;
         newGameModel.startSinglePlayerGame( newGameLobby, 
                                             function(id, newData) {
           allUsers[id].socket.emit('newData', newData);
@@ -200,20 +199,18 @@ module.exports = {
       //////////////////////////////////////////
 
       userSocket.on('answer', function(correct) {
-        console.log(correct);
-        findLobby(function(foundLobby) {   
-		// and why does it have to do this? stupid...
-          var relevantGame = allGames[allUsers[userId].gameId];
+        // note: removed this too
+        //findLobby(function(foundLobby) {   
+          var relevantGame = allLobbiesHash[allUsers[userId].gameId];
           relevantGame.gameModel.registerAnswer(
-            foundLobby, userId, correct.correct, function(id, newData) {
-              allUsers[id].socket.emit('newData', newData);
-            }
-          );
+          relevantGame, userId, correct.correct, function(id, newData) {
+            allUsers[id].socket.emit('newData', newData);
+        //  });
         })
       });
 
       userSocket.on('gameEnd', function(data) {
-        var relevantGame = allGames[allUsers[userId].gameId];
+        var relevantGame = allLobbiesHash[allUsers[userId].gameId];
 
         //eventually, only emit to people in this room
         relevantGame.endGame(function(winnerData){

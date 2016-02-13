@@ -6,7 +6,8 @@ module.exports = React.createClass({
   render: function() {
     return (
       <li>
-        <button className="title-button" onClick={this.props.registerAnswer}>
+        <button className="hvr-rectangle-in title-button" 
+                onClick={this.props.registerAnswer}>
           <h3>
             {this.props.title}
           </h3>

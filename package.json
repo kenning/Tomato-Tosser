@@ -4,7 +4,8 @@
   "description": "movie review game",
   "main": "./bin/www",
   "scripts": {
-    "start": "find dist/ -mindepth 1 -delete && grunt serve"
+    "start": "rm -rf dist/ && mkdir dist/ && grunt serve",
+    "test": "grunt test"
   },
   "repository": {
     "type": "git"
