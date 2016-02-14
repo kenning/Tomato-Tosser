@@ -37,7 +37,6 @@ module.exports = React.createClass({
     socketInterface.addNewDataListener(this.updateData);
   },
   updateData: function(data) {
-    console.log(data);
     var incrementer = ++this.state.latestUpdateIncrementer;
     var that = this;
     setTimeout(function() {
@@ -51,7 +50,6 @@ module.exports = React.createClass({
     this.setState(data);
   },
   leaveLobby: function(){
-    console.log('huh');
     socketInterface.leaveGameLobby();
   },
   endGame: function() {

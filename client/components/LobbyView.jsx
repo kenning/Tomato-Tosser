@@ -14,15 +14,19 @@ module.exports = React.createClass({
           {this.renderUsersIfTheyExist()}
         </div>
         <div id="lobby-buttons">
-          {this.renderButtons()}
+          {this.renderSingleTeamButton()}
+          {this.renderMultipleTeamButton()}
         </div>
+        <button onClick={this.openGameLobby}>
+          Open lobby
+        </button>
         <div>
-          <button className="button light-wood" onClick={this.removeGameLobby}>
+          <button onClick={this.removeGameLobby}>
             Remove this lobby
           </button>
         </div>
         <div>
-          <button className="button light-wood" onClick={this.props.leaveLobby}>
+          <button onClick={this.props.leaveLobby}>
             Go back
           </button>
         </div>
@@ -38,47 +42,34 @@ module.exports = React.createClass({
       }))
     }
   },
-  renderButtons: function() {
-    if(!this.props || !this.props.lobby) {
-      return (<div></div>)
-    } else if(this.props.lobby.closed) {
-      if(this.props.lobby.users.length > 3 && 
-         this.props.lobby.users.length%2 === 0) {
-        return(
-          <div className="no-padding">
-            <button className="button light-wood" onClick={this.startSingleTeamGame}>
-             Start cooperative game!
-            </button>
-            <br/>
-            <button className="button light-wood" onClick={this.startMultipleTeamGame}>
-             Start team game!
-            </button>
-            <br/>
-            <button className="button light-wood" onClick={this.openGameLobby}>
-              Open lobby
-            </button>
-          </div>
-        )
-      } else if(this.props.lobby.users.length > 1) {      
-        return(
-          <div className="no-padding">
-            <button className="button light-wood" onClick={this.startSingleTeamGame}>
-             Start cooperative game!
-            </button>
-            <br/>
-            <button className="button light-wood" onClick={this.openGameLobby}>
-              Open lobby
-            </button>
-          </div>
-          )
-      }
+  renderSingleTeamButton: function() {
+    if (this.props.lobby.users.length > 1) {
+      return(
+        <button onClick={this.startSingleTeamGame}>
+         Start cooperative game!
+        </button>
+      ) 
     } else {
       return(
-        <div className="no-padding"> 
-          <button className="button light-wood" onClick={this.closeGameLobby}>
-            Close lobby
-          </button>
-        </div>
+        <button className="disabled">
+         Start cooperative game!
+        </button>
+      )
+    }
+  },
+  renderMultipleTeamButton: function() {
+    if(this.props.lobby.users.length > 3 && 
+        this.props.lobby.users.length%2 === 0) {
+      return (
+        <button onClick={this.startMultipleTeamGame}>
+          Start team game!
+        </button>
+      )
+    } else {
+      return (
+        <button className="disabled">
+          Start team game!
+        </button>
       )
     }
   },
